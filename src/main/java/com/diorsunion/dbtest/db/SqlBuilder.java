@@ -171,8 +171,11 @@ public interface SqlBuilder {
 
 
     static String getTableName(DataSet dataSet){
+        String tableName = dataSet.tableName();
+        if(tableName!=""){
+            return tableName;
+        }
         Entity entity = dataSet.entityClass().getAnnotation(Entity.class);
-        String tableName = null;
         if (entity != null && entity.name()!=null && !"".equals(entity.name())){
             tableName = entity.name();
         }else{

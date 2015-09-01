@@ -58,12 +58,19 @@ public @interface DataSet {
 	 */
 	String dataSource() default "";
 
-    /**
-     * 表名(可选，和class二选一).
-     *
-     * @return the string
-     */
-    Class<?> entityClass() default Object.class;
+	/**
+	 * 表实体
+	 *
+	 * @return the string
+	 */
+	Class<?> entityClass() default Object.class;
+
+	/**
+	 * 表名，如果为null，则用entity.className
+	 *
+	 * @return the string
+	 */
+	String tableName() default "";
 	
 	/**
 	 * 插入数据条数（必选）.
