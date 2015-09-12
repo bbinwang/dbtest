@@ -169,9 +169,15 @@ public interface SqlBuilder {
         return entityLabel.intern();
     }
 
-
+    /**
+     * 根据Annotation获取表名<br/>
+     * 如果tableName属性设置了值，则使用tableName属性<br/>
+     * 否则使用className<br/>
+     * @param dataSet
+     * @return
+     */
     static String getTableName(DataSet dataSet){
-        String tableName = dataSet.tableName();
+        String tableName = dataSet.tableName().intern();
         if(tableName!=""){
             return tableName;
         }
