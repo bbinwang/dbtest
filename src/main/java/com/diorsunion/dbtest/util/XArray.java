@@ -3,7 +3,7 @@ package com.diorsunion.dbtest.util;
 /**
  * The Class XArray.
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 public class XArray {
 

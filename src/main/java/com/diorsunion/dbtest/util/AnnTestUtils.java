@@ -16,14 +16,14 @@ import java.sql.Statement;
 /**
  * The Class AnnTestUtils.
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 public class AnnTestUtils {
 	
 	private static final Log logger = LogFactory.getLog(AnnTestUtils.class);
 	
 	/**
-	 * 设置 field.
+	 * set field.
 	 *
 	 * @param target the target
 	 * @param name the name
@@ -34,7 +34,7 @@ public class AnnTestUtils {
 	}
 	
 	/**
-	 * 设置 field.
+	 * set field.
 	 *
 	 * @param target the target
 	 * @param name the name
@@ -58,7 +58,7 @@ public class AnnTestUtils {
             try {  
                 return unwrap((T) ((Advised) proxiedInstance).getTargetSource().getTarget());  
             } catch (Exception e) {  
-                Assert.fail("对代理对象进行unwrap发生异常:" + proxiedInstance.getClass());  
+                Assert.fail("unwrap to proxy exception:" + proxiedInstance.getClass());
             }  
         }  
         return proxiedInstance;  

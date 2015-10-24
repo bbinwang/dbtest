@@ -1,14 +1,12 @@
 package com.diorsunion.dbtest.util;
 
-import com.diorsunion.dbtest.ColumnObject;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * The Class CustomStringResolve.
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 public class CustomStringResolve {
 	
@@ -98,7 +96,7 @@ public class CustomStringResolve {
 		Map<String, String> customs = findCustom(customString);
 		for (String key : customs.keySet()) {
 			if (key.toUpperCase()
-					.equals(columnObject.getName().toUpperCase())) {
+					.equals(columnObject.name.toUpperCase())) {
 
 				String value = customs.get(key);
 				if (value.startsWith("{") && value.endsWith("}")) {
@@ -108,37 +106,37 @@ public class CustomStringResolve {
 					for (int i = 0; i < customArr.length; i++) {
 						arr[i] = conventBackSpecial(customArr[i]);
 					}
-					columnObject.setCustoms(arr);
+					columnObject.customs = arr;
 					continue;
 				}
 				if (value.startsWith("[") && value.endsWith("]")) {
 					String v = value.substring(1, value.length() - 1);
-					columnObject.setRange(v);
+					columnObject.range = v;
 					continue;
 				}
 				if (value.contains("^")) {
-					columnObject.setIncrease(true);
+					columnObject.increase =true;
 
 					String[] v = value.split("\\^");
 					if (v.length != 1 && v.length != 2) {
 						throw new RuntimeException("Custom date format error! ^ error!");
 					}
-					columnObject.setValue(conventBackSpecial(v[0]));
+					columnObject.value = conventBackSpecial(v[0]);
 					if (v.length == 2) {
-						int step = columnObject.getStep();
+						int step = columnObject.step;
 						try {
 							step = Integer.parseInt(v[1]);
 						} catch (Exception e) {
 							throw new RuntimeException("Custom date format error! ^ step is not number!");
 						}
-						columnObject.setStep(step);
+						columnObject.step= step;
 					}
 					continue;
 				}
 				else{
-					columnObject.setIncrease(false);
+					columnObject.increase = false;
 				}
-				columnObject.setValue(conventBackSpecial(customs.get(key)));
+				columnObject.value = conventBackSpecial(customs.get(key));
 			}
 		}
 		return columnObject;

@@ -8,7 +8,7 @@ import com.diorsunion.dbtest.enums.DBType;
 
 /**
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 public class SqlBuilderFactory {	
 	

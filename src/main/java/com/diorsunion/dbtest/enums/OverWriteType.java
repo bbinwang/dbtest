@@ -5,7 +5,7 @@ import com.diorsunion.dbtest.exception.DBTestException;
 /**
  * The Enum ColumnType.
  * 
- * @author 王尼玛
+ * @author harley-dog
  */
 public enum OverWriteType {
 

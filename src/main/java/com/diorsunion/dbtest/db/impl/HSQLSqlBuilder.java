@@ -1,8 +1,8 @@
 package com.diorsunion.dbtest.db.impl;
 
-import com.diorsunion.dbtest.ColumnObject;
 import com.diorsunion.dbtest.db.SqlBuilder;
 import com.diorsunion.dbtest.enums.ColumnType;
+import com.diorsunion.dbtest.util.ColumnObject;
 import org.apache.ibatis.type.*;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * The Class OracleSqlBuilder.
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 public class HSQLSqlBuilder implements SqlBuilder{
 	
@@ -20,22 +20,22 @@ public class HSQLSqlBuilder implements SqlBuilder{
 	 */
 	public String getValue(ColumnObject columnObject,int index){
 		//函数
-		if(columnObject.getValue()!=null
-				&& columnObject.getValue().startsWith("FUNC{")
-				&& columnObject.getValue().endsWith("}")){
-			return (columnObject.getValue().substring(5, columnObject.getValue().length()-1));
+		if(columnObject.value!=null
+				&& columnObject.value.startsWith("FUNC{")
+				&& columnObject.value.endsWith("}")){
+			return (columnObject.value.substring(5, columnObject.value.length() - 1));
 		}
 		//自定义数据
-		if(columnObject.getCustoms() != null && columnObject.getCustoms().length>0 && index<columnObject.getCustoms().length){
-            ColumnType columnType = columnObject.getValueType();
-            String value = columnObject.getCustoms()[index];
+		if(columnObject.customs != null && columnObject.customs.length>0 && index<columnObject.customs.length){
+            ColumnType columnType = columnObject.valueType;
+            String value = columnObject.customs[index];
 			if(columnType.isQuotation()){
 				return "'"+value+"'";
 			}else{
 				return value;
 			}	
 		}
-		switch (columnObject.getValueType()) {
+		switch (columnObject.valueType) {
 		case SYSDATE:
             return "now()";
 		case SYSTIME:
@@ -52,8 +52,8 @@ public class HSQLSqlBuilder implements SqlBuilder{
         List<ColumnObject> columnObjects = SqlBuilder.getColumnsByClass(clazz);
         final StringBuilder create_sql = new StringBuilder("create table "+tableName+"(");
         columnObjects.stream().forEach(columnObject -> {
-            create_sql.append(columnObject.getName());
-            Class typeHanlerClazz = columnObject.getTypeHandler().getClass();
+            create_sql.append(columnObject.name);
+            Class typeHanlerClazz = columnObject.typeHandler.getClass();
             if(IntegerTypeHandler.class.equals(typeHanlerClazz)){
                 create_sql.append(" ").append("int");
             }else if(ShortTypeHandler.class.equals(typeHanlerClazz)){
@@ -69,7 +69,7 @@ public class HSQLSqlBuilder implements SqlBuilder{
             }else if(DoubleTypeHandler.class.equals(typeHanlerClazz)){
                 create_sql.append(" ").append("double");
             }
-            if(columnObject.isIncrease()){
+            if(columnObject.increase){
                 create_sql.append(" PRIMARY KEY NOT NULL IDENTITY,");
             }else{
                 create_sql.append(",");

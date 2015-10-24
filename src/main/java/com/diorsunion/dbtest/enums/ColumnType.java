@@ -8,26 +8,18 @@ import java.util.Date;
 /**
  * The Enum ColumnType.
  * 
- * @author 王尼玛
+ * @author harley-dog
  */
 public enum ColumnType {
 
-	/** NULL. */
 	NULL(false),
-	/** 空字符. */
-	BLANK(false), 
-	/** 常量. */
+	BLANK(false),
 	VARCHAR(true),
-	/** 数字. */
-	NUMBER(false), 
-	/** 当前日期. */
-	SYSDATE(true), 
-	/** 当前时间. */
+	NUMBER(false),
+	SYSDATE(true),
 	SYSTIME(true),
-	/** 当前时间戳. */
 	TIMESTAMP(true),
-	/** 自定义函数. */
-	FUNCTION(false); 
+	FUNCTION(false);
 	
 	private boolean isQuotation;
 	

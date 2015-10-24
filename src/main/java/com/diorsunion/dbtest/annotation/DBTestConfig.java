@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 /**
  * The Interface AnnTestConfig.
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 @Target({ElementType.METHOD,ElementType.TYPE})   
 @Retention(RetentionPolicy.RUNTIME) 

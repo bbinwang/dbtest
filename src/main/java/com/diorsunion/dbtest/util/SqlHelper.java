@@ -1,6 +1,5 @@
 package com.diorsunion.dbtest.util;
 
-import com.diorsunion.dbtest.ColumnObject;
 import com.diorsunion.dbtest.DBTest;
 import com.diorsunion.dbtest.db.SqlBuilder;
 import com.diorsunion.dbtest.db.SqlBuilderFactory;
@@ -11,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SqlHelper {
 	
@@ -19,7 +17,7 @@ public class SqlHelper {
 
 
 	/**
-	 * 获取数据库类型.
+	 * return the db type.
 	 * 
 	 * @param connection the connection
 	 * @return the database type
@@ -54,7 +52,7 @@ public class SqlHelper {
 	}
 	
 	/**
-	 * 批量执行sql.
+	 * execute batch sql.
 	 * 
 	 * @param connection the connection
 	 * @param sqls the sqls
@@ -122,7 +120,7 @@ public class SqlHelper {
 				ColumnObject columnObject = list.get(j);
 				if (j != 0)
 					sb.append(",");
-				sb.append(columnObject.getName());
+				sb.append(columnObject.name);
 			}
 
 			sb.append(") values(");

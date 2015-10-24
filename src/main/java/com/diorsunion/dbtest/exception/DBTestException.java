@@ -4,7 +4,7 @@ package com.diorsunion.dbtest.exception;
 /**
  * The Class AnntestException.
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 public class DBTestException extends RuntimeException {
 

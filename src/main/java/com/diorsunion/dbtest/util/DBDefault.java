@@ -1,6 +1,5 @@
 package com.diorsunion.dbtest.util;
 
-import com.diorsunion.dbtest.ColumnObject;
 import com.diorsunion.dbtest.annotation.DBTestConfig;
 import com.diorsunion.dbtest.enums.ColumnType;
 
@@ -61,7 +60,6 @@ public class DBDefault {
 			else
 				columnObject.setValue(String.valueOf(config!=null?config.defaultNumber():1L));
 		}
-		
 		return columnObject;
 	}
 }

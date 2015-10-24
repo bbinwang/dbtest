@@ -44,7 +44,7 @@ import java.lang.annotation.*;
  * <code>@DataSet</code>(tbName="SIZE_INFO",dataFile="size_info.csv")  
  * </pre>
  * <p>
- * @author 王尼玛
+ * @author harley-dog
  */
 @Target({ElementType.METHOD,ElementType.TYPE})   
 @Retention(RetentionPolicy.RUNTIME) 

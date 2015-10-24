@@ -1,6 +1,6 @@
 package com.diorsunion.dbtest;
 
-import com.google.common.collect.Maps;
+import com.diorsunion.dbtest.util.ColumnObject;
 import com.diorsunion.dbtest.annotation.DBTestConfig;
 import com.diorsunion.dbtest.annotation.DataSet;
 import com.diorsunion.dbtest.annotation.DataSets;
@@ -33,27 +33,7 @@ public class DBTest {
     public static DBTest getInstance() {
         return new DBTest();
     }
-//
-//    /**
-//     * 从csv中获取自定义数据.
-//     *
-//     * @param ds the ds
-//     * @return the custom data
-//     * @throws IOException
-//     */
-//    public static final Map<String, String[]> getCustomData(DataSet ds, Method method) throws IOException {
-//        CustomDataManager cvsCustomDataManager = new CvsCustomDataManager();
-//        Map<String, String[]> customMap = cvsCustomDataManager.getCustomData(ds, method);
-//        return customMap;
-//    }
 
-
-    /**
-     * 取方法上的DataSet集合.
-     *
-     * @param method the method
-     * @return the date sets
-     */
     public final static List<DataSet> getDateSets(Method method) {
         List<DataSet> allDataSet = new ArrayList<DataSet>();
 
@@ -130,12 +110,10 @@ public class DBTest {
         String tableName = SqlBuilder.getTableName(dataSet);
         List<ColumnObject> list = SqlBuilder.getColumnsByClass(dataSet.entityClass());
 
-        //自定义数据覆盖默认数据
         if (dataSet.custom() != null && dataSet.custom().length() > 0) {
             changeColumnsByCustomAnnotation(dataSet.custom(), list);
         }
 
-        //准备sql并执行
         String[] sqls = SqlHelper.prepareSqls(
                 SqlHelper.getDatabaseType(connection, dataSet.dbType()),
                 tableName, dataSet.number(), list);
@@ -172,7 +150,7 @@ public class DBTest {
             String type = resultSet.getString("TYPE_NAME");
             int columnSize = resultSet.getInt("COLUMN_SIZE");
             int decimalDigits = resultSet.getInt("DECIMAL_DIGITS");
-            //去掉mysql bigint unsigned 之类
+            //remove mysql bigint unsigned 之类
             type = type.indexOf(" ") == -1 ? type : type.substring(0, type.indexOf(" "));
 
             //int size = resultSet.getInt("COLUMN_SIZE");

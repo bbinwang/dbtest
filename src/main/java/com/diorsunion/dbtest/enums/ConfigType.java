@@ -4,7 +4,7 @@ package com.diorsunion.dbtest.enums;
 /**
  * The Enum ColumnType.
  * 
- * @author 王尼玛
+ * @author harley-dog
  */
 public enum ConfigType {
 	DB,

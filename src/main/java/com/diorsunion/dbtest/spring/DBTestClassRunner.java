@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * The Class ObunitSpringJUnit4ClassRunner.
  *
- * @author 王尼玛
+ * @author harley-dog
  */
 public class DBTestClassRunner extends SpringJUnit4ClassRunner {
 

@@ -6,7 +6,7 @@ import com.diorsunion.dbtest.enums.DBType;
 import org.junit.Test;
 
 /**
- * Created by dingshan.yyj on 2015/4/27.
+ * @author harley-dog on 2015/4/27.
  */
 public class SQLBuilderTest {
     @Test

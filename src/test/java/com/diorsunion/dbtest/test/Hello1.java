@@ -5,7 +5,7 @@ import javax.persistence.Entity;
 import java.util.Date;
 
 /**
- * Created by dingshan.yyj on 2015/4/30.
+ * @author harley-dog on 2015/4/30.
  */
 @Entity(name="hello")
 public class Hello1 {
