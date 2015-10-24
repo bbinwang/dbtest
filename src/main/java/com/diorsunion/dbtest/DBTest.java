@@ -1,12 +1,12 @@
 package com.diorsunion.dbtest;
 
-import com.diorsunion.dbtest.util.ColumnObject;
 import com.diorsunion.dbtest.annotation.DBTestConfig;
 import com.diorsunion.dbtest.annotation.DataSet;
 import com.diorsunion.dbtest.annotation.DataSets;
 import com.diorsunion.dbtest.db.SqlBuilder;
 import com.diorsunion.dbtest.db.SqlBuilderFactory;
 import com.diorsunion.dbtest.enums.DBType;
+import com.diorsunion.dbtest.util.ColumnObject;
 import com.diorsunion.dbtest.util.CustomStringResolve;
 import com.diorsunion.dbtest.util.DBDefault;
 import com.diorsunion.dbtest.util.SqlHelper;
@@ -52,7 +52,7 @@ public class DBTest {
     }
 
 
-    private static final Log logger = LogFactory.getLog(DBTest.class);
+    private final static Log logger = LogFactory.getLog(DBTest.class);
     /**
      * Inits the data.
      *
@@ -88,7 +88,7 @@ public class DBTest {
      * @param dsName      the ds name
      * @return the data source
      */
-    private static final DataSource getDataSource(Map<String, DataSource> dataSources, String dsName) {
+    private final static DataSource getDataSource(Map<String, DataSource> dataSources, String dsName) {
         if (dsName != null && dsName.length() != 0) {
             return dataSources.get(dsName);
         }
@@ -106,7 +106,7 @@ public class DBTest {
      * @throws SAXException                 the sAX exception
      * @throws IOException                  Signals that an I/O exception has occurred.
      */
-    private static final void initSingleData(Connection connection, DataSet dataSet, Method method) throws SQLException, ParserConfigurationException, SAXException, IOException {
+    private final static void initSingleData(Connection connection, DataSet dataSet, Method method) throws SQLException, ParserConfigurationException, SAXException, IOException {
         String tableName = SqlBuilder.getTableName(dataSet);
         List<ColumnObject> list = SqlBuilder.getColumnsByClass(dataSet.entityClass());
 
@@ -120,7 +120,7 @@ public class DBTest {
         SqlHelper.executeBatch(connection, sqls,true);
     }
 
-    private static final void clearSingleData(Connection connection, DataSet dataSet,String tableName) throws SQLException {
+    private final static void clearSingleData(Connection connection, DataSet dataSet, String tableName) throws SQLException {
         if(!Object.class.equals(dataSet.entityClass())){
             SqlHelper.execute(connection, "drop table if exists "+tableName, false);
             DBType dbType = SqlHelper.getDatabaseType(connection, dataSet.dbType());
@@ -140,7 +140,7 @@ public class DBTest {
      * @return the columns by db
      * @throws SQLException the sQL exception
      */
-    private static final List<ColumnObject> getColumnsByDB(String tableName, Connection connection, DBTestConfig config) throws SQLException {
+    private final static List<ColumnObject> getColumnsByDB(String tableName, Connection connection, DBTestConfig config) throws SQLException {
         List<ColumnObject> list = new ArrayList<ColumnObject>();
         DatabaseMetaData metadata = connection.getMetaData();
         List<String> primaryKeys = SqlHelper.getPrimaryKeys(tableName, metadata);
@@ -165,7 +165,7 @@ public class DBTest {
      * @param list
      * @return
      */
-    private static final void changeColumnsByCustomAnnotation(String customString, List<ColumnObject> list) {
+    private final static void changeColumnsByCustomAnnotation(String customString, List<ColumnObject> list) {
         CustomStringResolve customStringResolve = new CustomStringResolve();
         for (ColumnObject columnObject : list) {
             customStringResolve.changeColumnObject(customString, columnObject);

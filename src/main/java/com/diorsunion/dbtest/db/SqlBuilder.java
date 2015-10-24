@@ -96,7 +96,7 @@ public interface SqlBuilder {
             }
             Class fieldType = field.getType();
             Annotation annotaion = fieldType.getAnnotation(Entity.class);
-            //不在基本变量里的，不要
+            //不在基本变量里的，并且不是Entity类型的不要
             if(annotaion==null && !classSet.contains(field.getType())){
                 continue;
             }
@@ -104,28 +104,31 @@ public interface SqlBuilder {
             GeneratedValue generatedValue = field.getAnnotation(GeneratedValue.class);
             ColumnObject columnObject = new ColumnObject();
 
+
             if(column!=null){
+                //强行设置列名
                 columnObject.name = column.name();
+                columnObject.typeHandler = registry.getTypeHandler(field.getType());
+                columnObject.valueType = getColumnType(columnObject.typeHandler.getClass());
             }else if(annotaion==null){
+                //默认列名
                 String fieldName = field.getName();
                 columnObject.name = convertEntityLabelToDBLabel(fieldName);
+                columnObject.typeHandler = registry.getTypeHandler(field.getType());
+                columnObject.valueType = getColumnType(columnObject.typeHandler.getClass());
             }else{
+                //默认列名,且为外键
                 String fieldName = field.getName()+"_id";
                 columnObject.name = fieldName;
-            }
-            TypeHandler typeHandler = registry.getTypeHandler(field.getType());
-            columnObject.typeHandler=typeHandler;
-            Class typeHanlerClazz = typeHandler.getClass();
-            if(annotaion!=null){
+
                 Field[] field_fields = fieldType.getFields();
-                for(Field field_field:field_fields){
-                    Annotation id_annctation = field_field.getAnnotation(Id.class);
+                for (Field field_id : field_fields) {
+                    Annotation id_annctation = field_id.getAnnotation(Id.class);
                     if(id_annctation!=null){
-                        columnObject.valueType = getColumnType(field_field.getType());
+                        columnObject.typeHandler = registry.getTypeHandler(field_id.getType());
+                        columnObject.valueType = getColumnType(field_id.getType());
                     }
                 }
-            }else{
-                columnObject.valueType = getColumnType(typeHanlerClazz);
             }
             if(generatedValue==null){
                 columnObject.increase = false;

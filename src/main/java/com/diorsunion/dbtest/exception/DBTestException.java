@@ -9,9 +9,9 @@ package com.diorsunion.dbtest.exception;
 public class DBTestException extends RuntimeException {
 
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 3116114419992542779L;
-	
-	/** The error code. */
+    private final static long serialVersionUID = 3116114419992542779L;
+
+    /** The error code. */
 	private int errorCode;
     
     /** The error name. */

@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public class DBTestClassRunner extends SpringJUnit4ClassRunner {
 
-    private static final Log logger = LogFactory.getLog(DBTestClassRunner.class);
+    private final static Log logger = LogFactory.getLog(DBTestClassRunner.class);
 
     /**
      * Instantiates a new obunit spring j unit4 class runner.

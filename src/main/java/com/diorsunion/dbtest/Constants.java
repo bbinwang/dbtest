@@ -6,6 +6,6 @@ package com.diorsunion.dbtest;
  * @author harley-dog
  */
 public class Constants {
-	public static final String DEFAULT_DATASOURCE = "DEFAULT_DATASOURCE";	
+	public final static String DEFAULT_DATASOURCE = "DEFAULT_DATASOURCE";
 	
 }

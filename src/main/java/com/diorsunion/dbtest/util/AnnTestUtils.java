@@ -19,8 +19,8 @@ import java.sql.Statement;
  * @author harley-dog
  */
 public class AnnTestUtils {
-	
-	private static final Log logger = LogFactory.getLog(AnnTestUtils.class);
+
+	private final static Log logger = LogFactory.getLog(AnnTestUtils.class);
 	
 	/**
 	 * set field.

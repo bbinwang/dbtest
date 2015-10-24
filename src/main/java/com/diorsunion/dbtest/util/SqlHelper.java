@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SqlHelper {
-	
-	private static final Log logger = LogFactory.getLog(DBTest.class);
+
+	private final static Log logger = LogFactory.getLog(DBTest.class);
 
 
 	/**
