@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class DBDefault {
 	
-	private static Map<String,ColumnType> map = new HashMap<String,ColumnType>();
+	private static Map<String,ColumnType> map = new HashMap<>();
 	
 	static{
 		//mysql
@@ -47,18 +47,18 @@ public class DBDefault {
 
 	public static ColumnObject convent(String name, String type, boolean isKey, int columnSize, int decimalDigits,DBTestConfig config) {
 		ColumnObject columnObject = new ColumnObject();
-		columnObject.setName(name);
-		columnObject.setValueType(map.get(type));
-		columnObject.setColumnSize(columnSize);
-		columnObject.setDecimalDigits(decimalDigits);
-		columnObject.setIncrease(isKey);
+		columnObject.name = name;
+		columnObject.valueType = (map.get(type));
+		columnObject.columnSize = (columnSize);
+		columnObject.decimalDigits = (decimalDigits);
+		columnObject.increase = (isKey);
 		if (map.get(type) == ColumnType.VARCHAR) {
-			columnObject.setValue(name);
+			columnObject.value = (name);
 		} else if (map.get(type) == ColumnType.NUMBER) {
 			if(isKey)
-				columnObject.setValue(String.valueOf(config!=null?config.firstId():1L));
+				columnObject.value = (String.valueOf(config!=null?config.firstId():1L));
 			else
-				columnObject.setValue(String.valueOf(config!=null?config.defaultNumber():1L));
+				columnObject.value = (String.valueOf(config!=null?config.defaultNumber():1L));
 		}
 		return columnObject;
 	}
