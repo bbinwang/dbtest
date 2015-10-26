@@ -3,19 +3,18 @@ package com.diorsunion.dbtest.db;
 import com.diorsunion.dbtest.annotation.DataSet;
 import com.diorsunion.dbtest.enums.ColumnType;
 import com.diorsunion.dbtest.util.ColumnObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.apache.ibatis.type.*;
+import org.springframework.util.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import java.lang.annotation.Annotation;
+import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -86,7 +85,7 @@ public interface SqlBuilder {
      * ColumnObject:包括name和type两个重要属性，用于在创建表结构的时候生成表字段名称和表字段类型
      */
     static List<ColumnObject> getColumnsByClass(Class entityClass){
-        List<ColumnObject> list = new ArrayList<ColumnObject>();
+        List<ColumnObject> list = Lists.newArrayList();
         Field[] fields = entityClass.getDeclaredFields();
         for(Field field:fields){
             field.setAccessible(true);
@@ -94,56 +93,84 @@ public interface SqlBuilder {
             if((field.getModifiers() & java.lang.reflect.Modifier.STATIC) == java.lang.reflect.Modifier.STATIC){
                 continue;
             }
-            Class fieldType = field.getType();
-            Annotation annotaion = fieldType.getAnnotation(Entity.class);
+//            Class fieldType = field.getType();
+            JoinColumns join_key_annotaion = field.getAnnotation(JoinColumns.class);//
             //不在基本变量里的，并且不是Entity类型的不要
-            if(annotaion==null && !classSet.contains(field.getType())){
+            if (join_key_annotaion == null && !classSet.contains(field.getType())) {
                 continue;
             }
             Column column = field.getAnnotation(Column.class);
             GeneratedValue generatedValue = field.getAnnotation(GeneratedValue.class);
+
             ColumnObject columnObject = new ColumnObject();
+            columnObject.increase = generatedValue != null;
 
+            if (column != null) {
+                ColumnObject c = columnObject.clone();
 
-            if(column!=null){
                 //强行设置列名
-                columnObject.name = column.name();
-                columnObject.typeHandler = registry.getTypeHandler(field.getType());
-                columnObject.valueType = getColumnType(columnObject.typeHandler.getClass());
-            }else if(annotaion==null){
+                c.name = column.name();
+                c.typeHandler = registry.getTypeHandler(field.getType());
+                c.valueType = getColumnType(c.typeHandler.getClass());
+
+                if (c.valueType == ColumnType.VARCHAR) {
+                    c.value = columnObject.name;
+                } else if (c.valueType == ColumnType.NUMBER) {
+                    if (c.increase)
+                        c.value = String.valueOf(1L);
+                    else
+                        c.value = String.valueOf(1L);
+                }
+                list.add(c);
+            } else if (join_key_annotaion != null) {
+                Class colunm_class = field.getType();
+                Field[] field_fields = colunm_class.getDeclaredFields();
+                Map<String, Field> fieldMap = Maps.newHashMap();
+                for (Field field_field : field_fields) {
+                    field_field.setAccessible(true);
+                    fieldMap.put(field_field.getName(), field_field);
+                }
+                JoinColumn[] joinColumns = join_key_annotaion.value();
+                for (JoinColumn joinColumn : joinColumns) {
+                    String joinColumnName = joinColumn.name();
+                    Field field_field = fieldMap.get(joinColumnName);
+                    ColumnObject c = columnObject.clone();
+                    //默认列名,且为外键
+                    c.name = field.getName() + "_" + field_field.getName();
+                    final Class field_field_type = field_field.getType();
+                    c.typeHandler = registry.getTypeHandler(field_field_type);
+                    c.valueType = getColumnType(c.typeHandler.getClass());
+
+                    if (c.valueType == ColumnType.VARCHAR) {
+                        c.value = c.name;
+                    } else if (c.valueType == ColumnType.NUMBER) {
+                        if (c.increase)
+                            c.value = String.valueOf(1L);
+                        else
+                            c.value = String.valueOf(1L);
+                    }
+                    list.add(c);
+                }
+            } else {
+
+                ColumnObject c = columnObject.clone();
+
                 //默认列名
                 String fieldName = field.getName();
-                columnObject.name = convertEntityLabelToDBLabel(fieldName);
-                columnObject.typeHandler = registry.getTypeHandler(field.getType());
-                columnObject.valueType = getColumnType(columnObject.typeHandler.getClass());
-            }else{
-                //默认列名,且为外键
-                String fieldName = field.getName()+"_id";
-                columnObject.name = fieldName;
+                c.name = convertEntityLabelToDBLabel(fieldName);
+                c.typeHandler = registry.getTypeHandler(field.getType());
+                c.valueType = getColumnType(c.typeHandler.getClass());
 
-                Field[] field_fields = fieldType.getFields();
-                for (Field field_id : field_fields) {
-                    Annotation id_annctation = field_id.getAnnotation(Id.class);
-                    if(id_annctation!=null){
-                        columnObject.typeHandler = registry.getTypeHandler(field_id.getType());
-                        columnObject.valueType = getColumnType(field_id.getType());
-                    }
+                if (c.valueType == ColumnType.VARCHAR) {
+                    c.value = c.name;
+                } else if (c.valueType == ColumnType.NUMBER) {
+                    if (c.increase)
+                        c.value = String.valueOf(1L);
+                    else
+                        c.value = String.valueOf(1L);
                 }
+                list.add(c);
             }
-            if(generatedValue==null){
-                columnObject.increase = false;
-            }else{
-                columnObject.increase = true;
-            }
-            if (columnObject.valueType == ColumnType.VARCHAR) {
-                columnObject.value = columnObject.name;
-            } else if (columnObject.valueType == ColumnType.NUMBER) {
-                if(columnObject.increase)
-                    columnObject.value = String.valueOf(1L);
-                else
-                    columnObject.value = String.valueOf(1L);
-            }
-            list.add(columnObject);
         }
         return list;
     }
@@ -170,7 +197,8 @@ public interface SqlBuilder {
 
     /**
      * hello_world -> helloWorld
-     * @param dbLabel
+     * @param dbLabel hello_world
+     * @return helloWorld
      */
     static String convertDBLabelToEntityLabel(String dbLabel){
         Pattern p= Pattern.compile("_[a-z]|_[A-Z]");
@@ -186,7 +214,9 @@ public interface SqlBuilder {
 
     /**
      * helloWorld -> hello_orld
-     * @param entityLabel
+     *
+     * @param entityLabel helloWorld
+     * @return hello_orld
      */
     static String convertEntityLabelToDBLabel(String entityLabel){
         entityLabel = entityLabel.replaceFirst(entityLabel.substring(0,1),entityLabel.substring(0,1).toLowerCase());
@@ -203,7 +233,7 @@ public interface SqlBuilder {
 
     static String getTableName(DataSet dataSet){
         String tableName = dataSet.tableName().intern();
-        if(tableName!=""){
+        if (!StringUtils.isEmpty(tableName)) {
             return tableName;
         }
         Entity entity = dataSet.entityClass().getAnnotation(Entity.class);

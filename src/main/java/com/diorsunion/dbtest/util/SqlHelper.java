@@ -4,11 +4,11 @@ import com.diorsunion.dbtest.DBTest;
 import com.diorsunion.dbtest.db.SqlBuilder;
 import com.diorsunion.dbtest.db.SqlBuilderFactory;
 import com.diorsunion.dbtest.enums.DBType;
+import com.google.common.collect.Lists;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class SqlHelper {
@@ -42,7 +42,7 @@ public class SqlHelper {
 	 * @throws SQLException the sQL exception
 	 */
 	public static List<String> getPrimaryKeys(String tableName, DatabaseMetaData metadata) throws SQLException {
-		List<String> primaryKeyList = new ArrayList<String>();
+		List<String> primaryKeyList = Lists.newArrayList();
 		ResultSet primaryKeys = metadata.getPrimaryKeys(null, null, tableName);
 		while (primaryKeys.next()) {
 			String primaryKeyColumn = primaryKeys.getString("COLUMN_NAME");
@@ -104,13 +104,8 @@ public class SqlHelper {
 	public static String[] prepareSqls(DBType databaseType, String tableName,
 			int number, List<ColumnObject> list) {
 		SqlBuilder sqlBuilder = SqlBuilderFactory.create(databaseType);
-		int row = number;
-//		if (!customList.isEmpty()) {
-//			List<String[]> values = new ArrayList<String[]>(customList.values());
-//			row = values.get(0).length;
-//		}
-		String[] sqls = new String[row];
-		for (int i = 0; i < row; i++) {
+		String[] sqls = new String[number];
+		for (int i = 0; i < number; i++) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("insert into ");
 			sb.append(tableName);
@@ -129,7 +124,8 @@ public class SqlHelper {
 				ColumnObject columnObject = list.get(j);
 				if (j != 0)
 					sb.append(",");
-                sb.append(sqlBuilder.getValue(columnObject, i));
+				String value = sqlBuilder.getValue(columnObject, i);
+				sb.append(value);
 			}
 			sb.append(")");
 			sqls[i] = sb.toString();

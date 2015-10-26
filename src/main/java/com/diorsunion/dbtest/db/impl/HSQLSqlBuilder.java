@@ -5,6 +5,7 @@ import com.diorsunion.dbtest.enums.ColumnType;
 import com.diorsunion.dbtest.util.ColumnObject;
 import org.apache.ibatis.type.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
@@ -14,13 +15,11 @@ import java.util.List;
  * @author harley-dog
  */
 public class HSQLSqlBuilder implements SqlBuilder{
-	
-	/* (non-Javadoc)
-	 * @see com.taobao.obunit.db.SqlBuilder#getValue(com.taobao.obunit.ColumnType)
-	 */
-	public String getValue(ColumnObject columnObject,int index){
-		//函数
-		if(columnObject.value!=null
+
+    @NotNull
+    public String getValue(ColumnObject columnObject, int index) {
+        //函数
+        if(columnObject.value!=null
 				&& columnObject.value.startsWith("FUNC{")
 				&& columnObject.value.endsWith("}")){
 			return (columnObject.value.substring(5, columnObject.value.length() - 1));

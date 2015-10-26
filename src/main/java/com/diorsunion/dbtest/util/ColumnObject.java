@@ -11,7 +11,7 @@ import java.util.Date;
  *
  * @author harley-dog
  */
-public class ColumnObject {
+public class ColumnObject implements Cloneable {
 
     public String name;
 
@@ -41,5 +41,14 @@ public class ColumnObject {
                 + decimalDigits + ", value=" + value + ", increase=" + increase
                 + ", step=" + step + ", range=" + range + ", customs="
                 + Arrays.toString(customs) + "]";
+    }
+
+    @Override
+    public ColumnObject clone() {
+        try {
+            return (ColumnObject) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }
