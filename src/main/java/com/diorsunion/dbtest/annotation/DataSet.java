@@ -81,7 +81,7 @@ public @interface DataSet {
 	
 	/**
 	 * 自定义.
-	 *
+	 * 日期格式为:yyyy-MM-dd-HH:mm:ss
 	 * @return the string
 	 */
 	String custom() default "";

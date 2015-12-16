@@ -101,8 +101,7 @@ public class SqlHelper {
 	 * @param list the list
 	 * @return the string[]
 	 */
-	public static String[] prepareSqls(DBType databaseType, String tableName,
-			int number, List<ColumnObject> list) {
+	public static String[] prepareSqls(DBType databaseType, String tableName, int number, List<ColumnObject> list) {
 		SqlBuilder sqlBuilder = SqlBuilderFactory.create(databaseType);
 		String[] sqls = new String[number];
 		for (int i = 0; i < number; i++) {

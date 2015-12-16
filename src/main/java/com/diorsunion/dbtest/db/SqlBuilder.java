@@ -28,45 +28,32 @@ public interface SqlBuilder {
     Set<Class> classSet = Sets.newHashSet(String.class,Integer.class,int.class,Long.class,long.class,Short.class,Date.class,double.class);
     TypeHandlerRegistry registry = new TypeHandlerRegistry();
 
-    /**
-     * Gets the value.
-     *
-     * @param tableName 表名
-     * @param clazz 表所对应的类名
-     * @return the value
-     */
-    String getCreateTable(String tableName,Class clazz);
-
-    String getValue(ColumnObject columnObject,int index);
-
     /* (non-Javadoc)
-	 * @see com.taobao.obunit.db.SqlBuilder#getValue(com.taobao.obunit.ColumnType, java.lang.String, int)
+     * @see com.taobao.obunit.db.SqlBuilder#getValue(com.taobao.obunit.ColumnType, java.lang.String, int)
 	 */
-    static String getDefaultValue(ColumnObject columnObject,int index){
+    static String getDefaultValue(ColumnObject columnObject, int index) {
         switch (columnObject.valueType) {
             case NULL:
                 return "null";
             case BLANK:
                 return "''";
             case VARCHAR:
-                if(columnObject.increase){
-                    if(columnObject.columnSize == 0){
-                        return "'"+columnObject.value+(index*columnObject.step+1)+"'";
+                if (columnObject.increase) {
+                    if (columnObject.columnSize == 0) {
+                        return "'" + columnObject.value + (index * columnObject.step + 1) + "'";
                     }
-                    int endIndex = columnObject.columnSize - (int) Math.log10(index*columnObject.step+1) -1;
-                    return "'"+columnObject.value.substring(0, columnObject.value.length() > endIndex ? endIndex : columnObject.value.length())+(index*columnObject.step+1)+"'";
-                }
-                else{
-                    if(columnObject.columnSize == 0){
-                        return "'"+columnObject.value+"'";
+                    int endIndex = columnObject.columnSize - (int) Math.log10(index * columnObject.step + 1) - 1;
+                    return "'" + columnObject.value.substring(0, columnObject.value.length() > endIndex ? endIndex : columnObject.value.length()) + (index * columnObject.step + 1) + "'";
+                } else {
+                    if (columnObject.columnSize == 0) {
+                        return "'" + columnObject.value + "'";
                     }
-                    return "'"+columnObject.value.substring(0, columnObject.value.length() > columnObject.columnSize ? columnObject.columnSize : columnObject.value.length())+"'";
+                    return "'" + columnObject.value.substring(0, columnObject.value.length() > columnObject.columnSize ? columnObject.columnSize : columnObject.value.length()) + "'";
                 }
             case NUMBER:
-                if(columnObject.increase){
-                    return (new BigDecimal(columnObject.value).add(BigDecimal.valueOf(index*columnObject.step))).toString();
-                }
-                else{
+                if (columnObject.increase) {
+                    return (new BigDecimal(columnObject.value).add(BigDecimal.valueOf(index * columnObject.step))).toString();
+                } else {
                     return columnObject.value;
                 }
             case SYSDATE:
@@ -84,16 +71,15 @@ public interface SqlBuilder {
      * 根据实体类型返回列集合
      * ColumnObject:包括name和type两个重要属性，用于在创建表结构的时候生成表字段名称和表字段类型
      */
-    static List<ColumnObject> getColumnsByClass(Class entityClass){
+    static List<ColumnObject> getColumnsByClass(Class entityClass) {
         List<ColumnObject> list = Lists.newArrayList();
         Field[] fields = entityClass.getDeclaredFields();
-        for(Field field:fields){
+        for (Field field : fields) {
             field.setAccessible(true);
             //静态变量不要
-            if((field.getModifiers() & java.lang.reflect.Modifier.STATIC) == java.lang.reflect.Modifier.STATIC){
+            if ((field.getModifiers() & java.lang.reflect.Modifier.STATIC) == java.lang.reflect.Modifier.STATIC) {
                 continue;
             }
-//            Class fieldType = field.getType();
             JoinColumns join_key_annotaion = field.getAnnotation(JoinColumns.class);//
             //不在基本变量里的，并且不是Entity类型的不要
             if (join_key_annotaion == null && !classSet.contains(field.getType())) {
@@ -175,38 +161,37 @@ public interface SqlBuilder {
         return list;
     }
 
-    static ColumnType getColumnType(Class type){
-        if(IntegerTypeHandler.class.equals(type)){
+    static ColumnType getColumnType(Class type) {
+        if (IntegerTypeHandler.class.equals(type)) {
             return ColumnType.NUMBER;
-        }else if(ShortTypeHandler.class.equals(type)){
+        } else if (ShortTypeHandler.class.equals(type)) {
             return ColumnType.NUMBER;
-        }else if(StringTypeHandler.class.equals(type)){
+        } else if (StringTypeHandler.class.equals(type)) {
             return ColumnType.VARCHAR;
-        }else if(CharacterTypeHandler.class.equals(type)){
+        } else if (CharacterTypeHandler.class.equals(type)) {
             return ColumnType.VARCHAR;
-        }else if(LongTypeHandler.class.equals(type)){
+        } else if (LongTypeHandler.class.equals(type)) {
             return ColumnType.NUMBER;
-        }else if(DateTypeHandler.class.equals(type)){
+        } else if (DateTypeHandler.class.equals(type)) {
             return ColumnType.SYSDATE;
-        }else if(DoubleTypeHandler.class.equals(type)){
+        } else if (DoubleTypeHandler.class.equals(type)) {
             return ColumnType.NUMBER;
         }
         return ColumnType.VARCHAR;
     }
-
 
     /**
      * hello_world -> helloWorld
      * @param dbLabel hello_world
      * @return helloWorld
      */
-    static String convertDBLabelToEntityLabel(String dbLabel){
-        Pattern p= Pattern.compile("_[a-z]|_[A-Z]");
-        Matcher m=p.matcher(dbLabel);
-        while(m.find()){
+    static String convertDBLabelToEntityLabel(String dbLabel) {
+        Pattern p = Pattern.compile("_[a-z]|_[A-Z]");
+        Matcher m = p.matcher(dbLabel);
+        while (m.find()) {
             String s = m.group();
-            if(s.length()>=2){
-                dbLabel = dbLabel.replaceFirst(s,s.substring(1,2).toUpperCase());
+            if (s.length() >= 2) {
+                dbLabel = dbLabel.replaceFirst(s, s.substring(1, 2).toUpperCase());
             }
         }
         return dbLabel.intern();
@@ -218,31 +203,42 @@ public interface SqlBuilder {
      * @param entityLabel helloWorld
      * @return hello_orld
      */
-    static String convertEntityLabelToDBLabel(String entityLabel){
-        entityLabel = entityLabel.replaceFirst(entityLabel.substring(0,1),entityLabel.substring(0,1).toLowerCase());
-        Pattern p= Pattern.compile("[A-Z]");
-        Matcher m=p.matcher(entityLabel);
+    static String convertEntityLabelToDBLabel(String entityLabel) {
+        entityLabel = entityLabel.replaceFirst(entityLabel.substring(0, 1), entityLabel.substring(0, 1).toLowerCase());
+        Pattern p = Pattern.compile("[A-Z]");
+        Matcher m = p.matcher(entityLabel);
         while(m.find()){
             String s = m.group();
-            if(s.length()>=1){
+            if (s.length() >= 1) {
                 entityLabel = entityLabel.replaceFirst(s, "_" + s.toLowerCase());
             }
         }
         return entityLabel.intern();
     }
 
-    static String getTableName(DataSet dataSet){
+    static String getTableName(DataSet dataSet) {
         String tableName = dataSet.tableName().intern();
         if (!StringUtils.isEmpty(tableName)) {
             return tableName;
         }
         Entity entity = dataSet.entityClass().getAnnotation(Entity.class);
-        if (entity != null && entity.name()!=null && !"".equals(entity.name())){
+        if (entity != null && entity.name() != null && !"".equals(entity.name())) {
             tableName = entity.name();
-        }else{
+        } else {
             tableName = dataSet.entityClass().getSimpleName();
         }
         tableName = SqlBuilder.convertEntityLabelToDBLabel(tableName);
         return tableName;
     }
+
+    /**
+     * Gets the value.
+     *
+     * @param tableName 表名
+     * @param clazz 表所对应的类名
+     * @return the value
+     */
+    String getCreateTable(String tableName, Class clazz);
+
+    String getValue(ColumnObject columnObject, int index);
 }

@@ -6,6 +6,9 @@ import com.diorsunion.dbtest.util.ColumnObject;
 import org.apache.ibatis.type.*;
 
 import javax.validation.constraints.NotNull;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -14,67 +17,80 @@ import java.util.List;
  *
  * @author harley-dog
  */
-public class HSQLSqlBuilder implements SqlBuilder{
+public class HSQLSqlBuilder implements SqlBuilder {
 
     @NotNull
     public String getValue(ColumnObject columnObject, int index) {
         //函数
-        if(columnObject.value!=null
-				&& columnObject.value.startsWith("FUNC{")
-				&& columnObject.value.endsWith("}")){
-			return (columnObject.value.substring(5, columnObject.value.length() - 1));
-		}
-		//自定义数据
-		if(columnObject.customs != null && columnObject.customs.length>0 && index<columnObject.customs.length){
+        if (columnObject.value != null
+                && columnObject.value.startsWith("FUNC{")
+                && columnObject.value.endsWith("}")) {
+            return (columnObject.value.substring(5, columnObject.value.length() - 1));
+        }
+        //自定义数据
+        if (columnObject.customs != null && columnObject.customs.length > 0 && index < columnObject.customs.length) {
             ColumnType columnType = columnObject.valueType;
             String value = columnObject.customs[index];
-			if(columnType.isQuotation()){
-				return "'"+value+"'";
-			}else{
-				return value;
-			}	
-		}
-		switch (columnObject.valueType) {
-		case SYSDATE:
-            return "now()";
-		case SYSTIME:
-            return "now()";
-        case TIMESTAMP:
-                return "now()";
-		default:
-			return SqlBuilder.getDefaultValue(columnObject, index);
-		}
-	}
+            if (columnType.isQuotation()) {
+                return "'" + value + "'";
+            } else {
+                return value;
+            }
+        }
+        SimpleDateFormat format_simple = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format_full = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        switch (columnObject.valueType) {
+            case SYSDATE:
+            case SYSTIME:
+            case TIMESTAMP:
+                if (columnObject.value == null) {
+                    return "now()";
+                } else if (columnObject.value.length() == 10) {
+                    try {
+                        Date date = format_simple.parse(columnObject.value);
+                        return "\'" + format_full.format(date) + "\'";
+                    } catch (ParseException e) {
+                        return "now()";
+                    }
+                } else if (columnObject.value.length() == 19) {
+                    return "\'" + columnObject.value + "\'";
+                } else {
+                    return "now()";
+                }
+            default:
+                return SqlBuilder.getDefaultValue(columnObject, index);
+        }
+    }
 
     @Override
-    public String getCreateTable(String tableName,Class clazz) {
+    public String getCreateTable(String tableName, Class clazz) {
         List<ColumnObject> columnObjects = SqlBuilder.getColumnsByClass(clazz);
-        final StringBuilder create_sql = new StringBuilder("create table "+tableName+"(");
+        final StringBuilder create_sql = new StringBuilder("create table " + tableName + "(");
         columnObjects.stream().forEach(columnObject -> {
             create_sql.append(columnObject.name);
             Class typeHanlerClazz = columnObject.typeHandler.getClass();
-            if(IntegerTypeHandler.class.equals(typeHanlerClazz)){
+            if (IntegerTypeHandler.class.equals(typeHanlerClazz)) {
                 create_sql.append(" ").append("int");
-            }else if(ShortTypeHandler.class.equals(typeHanlerClazz)){
+            } else if (ShortTypeHandler.class.equals(typeHanlerClazz)) {
                 create_sql.append(" ").append("smallint");
-            }else if(StringTypeHandler.class.equals(typeHanlerClazz)){
+            } else if (StringTypeHandler.class.equals(typeHanlerClazz)) {
                 create_sql.append(" ").append("varchar(2048)");
-            }else if(CharacterTypeHandler.class.equals(typeHanlerClazz)){
+            } else if (CharacterTypeHandler.class.equals(typeHanlerClazz)) {
                 create_sql.append(" ").append("char(255)");
-            }else if(LongTypeHandler.class.equals(typeHanlerClazz)){
+            } else if (LongTypeHandler.class.equals(typeHanlerClazz)) {
                 create_sql.append(" ").append("bigint");
-            }else if(DateTypeHandler.class.equals(typeHanlerClazz)){
+            } else if (DateTypeHandler.class.equals(typeHanlerClazz)) {
                 create_sql.append(" ").append("datetime");
-            }else if(DoubleTypeHandler.class.equals(typeHanlerClazz)){
+            } else if (DoubleTypeHandler.class.equals(typeHanlerClazz)) {
                 create_sql.append(" ").append("double");
             }
-            if(columnObject.increase){
+            if (columnObject.increase) {
                 create_sql.append(" PRIMARY KEY NOT NULL IDENTITY,");
-            }else{
+            } else {
                 create_sql.append(",");
             }
         });
-        create_sql.deleteCharAt(create_sql.length()-1);
+        create_sql.deleteCharAt(create_sql.length() - 1);
         create_sql.append(")");
         return create_sql.toString();
     }

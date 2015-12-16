@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DBTest {
+    private final static Log logger = LogFactory.getLog(DBTest.class);
+
     private DBTest() {
     }
 
@@ -51,8 +53,6 @@ public class DBTest {
         return allDataSet;
     }
 
-
-    private final static Log logger = LogFactory.getLog(DBTest.class);
     /**
      * Inits the data.
      *
@@ -116,19 +116,21 @@ public class DBTest {
 
         String[] sqls = SqlHelper.prepareSqls(
                 SqlHelper.getDatabaseType(connection, dataSet.dbType()),
-                tableName, dataSet.number(), list);
-        SqlHelper.executeBatch(connection, sqls,true);
+                tableName,
+                dataSet.number(),
+                list);
+        SqlHelper.executeBatch(connection, sqls, true);
     }
 
     private final static void clearSingleData(Connection connection, DataSet dataSet, String tableName) throws SQLException {
-        if(!Object.class.equals(dataSet.entityClass())){
-            SqlHelper.execute(connection, "drop table if exists "+tableName, false);
+        if (!Object.class.equals(dataSet.entityClass())) {
+            SqlHelper.execute(connection, "drop table if exists " + tableName, false);
             DBType dbType = SqlHelper.getDatabaseType(connection, dataSet.dbType());
             SqlBuilder sqlBuilder = SqlBuilderFactory.create(dbType);
-            String createTableSql = sqlBuilder.getCreateTable(tableName,dataSet.entityClass());
-            SqlHelper.execute(connection,createTableSql,true);
-        }else if(tableName!=null && !"".equals(tableName)){
-            SqlHelper.execute(connection, "delete from " + tableName,  true);
+            String createTableSql = sqlBuilder.getCreateTable(tableName, dataSet.entityClass());
+            SqlHelper.execute(connection, createTableSql, true);
+        } else if (tableName != null && !"".equals(tableName)) {
+            SqlHelper.execute(connection, "delete from " + tableName, true);
         }
     }
 
@@ -167,9 +169,12 @@ public class DBTest {
      */
     private final static void changeColumnsByCustomAnnotation(String customString, List<ColumnObject> list) {
         CustomStringResolve customStringResolve = new CustomStringResolve();
-        for (ColumnObject columnObject : list) {
-            customStringResolve.changeColumnObject(customString, columnObject);
-        }
+        Map<String, String> customMap = customStringResolve.findCustom(customString);
+        list
+                .parallelStream()
+                .filter(x -> customMap.containsKey(x.name.toUpperCase()))
+                .forEach(x -> customStringResolve.changeColumnObject(customMap, x));
+
     }
 
 
