@@ -1,7 +1,6 @@
 package com.diorsunion.dbtest.db.impl;
 
 import com.diorsunion.dbtest.db.SqlBuilder;
-import com.diorsunion.dbtest.enums.ColumnType;
 import com.diorsunion.dbtest.util.ColumnObject;
 import org.apache.ibatis.type.*;
 
@@ -21,39 +20,44 @@ public class HSQLSqlBuilder implements SqlBuilder {
 
     @NotNull
     public String getValue(ColumnObject columnObject, int index) {
+
+        SimpleDateFormat format_simple = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format_full = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //函数
         if (columnObject.value != null
                 && columnObject.value.startsWith("FUNC{")
                 && columnObject.value.endsWith("}")) {
             return (columnObject.value.substring(5, columnObject.value.length() - 1));
         }
+        String return_value = null;
         //自定义数据
         if (columnObject.customs != null && columnObject.customs.length > 0 && index < columnObject.customs.length) {
-            ColumnType columnType = columnObject.valueType;
-            String value = columnObject.customs[index];
-            if (columnType.isQuotation()) {
-                return "'" + value + "'";
-            } else {
-                return value;
-            }
+//            ColumnType columnType = columnObject.valueType;
+//            String value = columnObject.customs[index];
+            return_value = columnObject.customs[index];
+//            if (columnType.isQuotation()) {
+//                return "'" + value + "'";
+//            } else {
+//                return value;
+//            }
+        } else {
+            return_value = columnObject.value;
         }
-        SimpleDateFormat format_simple = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat format_full = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         switch (columnObject.valueType) {
             case SYSDATE:
             case SYSTIME:
             case TIMESTAMP:
-                if (columnObject.value == null) {
+                if (return_value == null) {
                     return "now()";
-                } else if (columnObject.value.length() == 10) {
+                } else if (return_value.length() == 10) {
                     try {
-                        Date date = format_simple.parse(columnObject.value);
+                        Date date = format_simple.parse(return_value);
                         return "\'" + format_full.format(date) + "\'";
                     } catch (ParseException e) {
                         return "now()";
                     }
-                } else if (columnObject.value.length() == 19) {
-                    return "\'" + columnObject.value + "\'";
+                } else if (return_value.length() == 19) {
+                    return "\'" + return_value + "\'";
                 } else {
                     return "now()";
                 }

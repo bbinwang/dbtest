@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
     <groupId>com.diorsunion</groupId>
 	<artifactId>dbtest</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 	<name>dbtest</name>
     <url>https://github.com/harley-dog/dbtest</url>
     <description>可以使用HSQLDB作为内存数据库的一个单元测试包</description>
