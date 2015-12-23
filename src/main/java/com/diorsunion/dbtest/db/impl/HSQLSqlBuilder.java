@@ -32,14 +32,7 @@ public class HSQLSqlBuilder implements SqlBuilder {
         String return_value = null;
         //自定义数据
         if (columnObject.customs != null && columnObject.customs.length > 0 && index < columnObject.customs.length) {
-//            ColumnType columnType = columnObject.valueType;
-//            String value = columnObject.customs[index];
             return_value = columnObject.customs[index];
-//            if (columnType.isQuotation()) {
-//                return "'" + value + "'";
-//            } else {
-//                return value;
-//            }
         } else {
             return_value = columnObject.value;
         }
@@ -62,7 +55,7 @@ public class HSQLSqlBuilder implements SqlBuilder {
                     return "now()";
                 }
             default:
-                return SqlBuilder.getDefaultValue(columnObject, index);
+                return return_value == null ? SqlBuilder.getDefaultValue(columnObject, index) : "\'" + return_value + "\'";
         }
     }
 
